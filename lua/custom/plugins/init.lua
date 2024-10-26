@@ -52,11 +52,26 @@ vim.api.nvim_create_autocmd("FileType", {
   end
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "astro",
+  callback = function()
+    lspconfig.astro.setup {}
+  end
+})
+
 lspconfig.nil_ls.setup {}
 
+-- keybinds
+vim.keymap.set('n', '<leader>bk', ':bd<CR>', { desc = 'Kill Buffer' })
+vim.keymap.set('n', '<leader>bn', ':bn<CR>', { desc = 'Next Buffer' })
+vim.keymap.set('n', '<leader>bp', ':bp<CR>', { desc = 'Previous Buffer' })
+vim.keymap.set('n', '<Tab>', ':bn<CR>', { desc = 'Next Buffer' })
+vim.keymap.set('n', '<S-Tab>', ':bp<CR>', { desc = 'Previous Buffer' })
+
+vim.keymap.set('n', '<leader>gg', '<CMD>Neogit<CR>')
 
 -- emacs keybinds
-vim.keymap.set({ 'n', 'v', 'i' }, '<C-g>', '<Esc>')
+vim.keymap.set({ 'n', 'v', 'i', 'c', 'o' }, '<C-g>', '<Esc>')
 vim.keymap.set({ 'i' }, '<C-e>', "<End>")
 vim.keymap.set({ 'i' }, '<C-a>', "<Home>")
 vim.keymap.set({ 'i' }, '<C-p>', "<Down>")
@@ -97,53 +112,5 @@ mkShell {
 })
 
 return {
-  {
-    'saghen/blink.cmp',
-    lazy = false, -- lazy loading handled internally
-    -- optional: provides snippets for the snippet source
-    dependencies = 'rafamadriz/friendly-snippets',
-
-    -- use a release tag to download pre-built binaries
-    version = 'v0.*',
-    -- OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
-    -- build = 'cargo build --release',
-    -- If you use nix, you can build from source using latest nightly rust with:
-    -- build = 'nix run .#build-plugin',
-
-    ---@module 'blink.cmp'
-    ---@type blink.cmp.Config
-    opts = {
-      highlight = {
-        -- sets the fallback highlight groups to nvim-cmp's highlight groups
-        -- useful for when your theme doesn't support blink.cmp
-        -- will be removed in a future release, assuming themes add support
-        use_nvim_cmp_as_default = true,
-      },
-      -- set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-      -- adjusts spacing to ensure icons are aligned
-      nerd_font_variant = 'normal',
-
-      -- experimental auto-brackets support
-      -- accept = { auto_brackets = { enabled = true } }
-
-      -- experimental signature help support
-      trigger = { signature_help = { enabled = true } },
-      keymap = {
-        hide = "<Esc>",
-        select_and_accept = "<CR>"
-      }
-
-    }
-  },
-  { 'hrsh7th/nvim-cmp', enabled = false },
-  {
-    'stevearc/oil.nvim',
-    ---@module 'oil'
-    ---@type oil.SetupOpts
-    opts = {},
-    -- Optional dependencies
-    -- dependencies = { { "echasnovski/mini.icons", opts = {} } },
-    dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
-  }
-
+  { import = 'custom.plugins.plugins' },
 }
