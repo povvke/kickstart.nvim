@@ -9,61 +9,13 @@
 -- oil.nvim
 vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
--- Example: Lazy load based on filetype
-local lspconfig = require('lspconfig')
 
--- Set up specific LSP when a specific file type is detected
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "lua",
-  callback = function()
-    lspconfig.lua_ls.setup {
-      on_init = function(client)
-        if client.workspace_folders then
-          local path = client.workspace_folders[1].name
-          if vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc') then
-            return
-          end
-        end
-
-        client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-          runtime = {
-            -- Tell the language server which version of Lua you're using
-            -- (most likely LuaJIT in the case of Neovim)
-            version = 'LuaJIT'
-          },
-          -- Make the server aware of Neovim runtime files
-          workspace = {
-            checkThirdParty = false,
-            library = {
-              vim.env.VIMRUNTIME
-              -- Depending on the usage, you might want to add additional paths here.
-              -- "${3rd}/luv/library"
-              -- "${3rd}/busted/library",
-            }
-            -- or pull in all of 'runtimepath'. NOTE: this is a lot slower and will cause issues when working on your own configuration (see https://github.com/neovim/nvim-lspconfig/issues/3189)
-            -- library = vim.api.nvim_get_runtime_file("", true)
-          }
-        })
-      end,
-      settings = {
-        Lua = {}
-      }
-    }
-  end
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "astro",
-  callback = function()
-    lspconfig.astro.setup {}
-  end
-})
-
-lspconfig.nil_ls.setup {}
 
 -- keybinds
 vim.keymap.set('n', '<leader>bk', ':bd<CR>', { desc = 'Kill Buffer' })
 vim.keymap.set('n', '<leader>bn', ':bn<CR>', { desc = 'Next Buffer' })
+vim.keymap.set('n', '<leader>bi', ':lua require("buffer_manager.ui").toggle_quick_menu()<CR>',
+  { desc = "Interactive buffer manager" })
 vim.keymap.set('n', '<leader>bp', ':bp<CR>', { desc = 'Previous Buffer' })
 vim.keymap.set('n', '<Tab>', ':bn<CR>', { desc = 'Next Buffer' })
 vim.keymap.set('n', '<S-Tab>', ':bp<CR>', { desc = 'Previous Buffer' })

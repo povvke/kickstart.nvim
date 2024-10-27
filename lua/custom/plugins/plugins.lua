@@ -33,10 +33,9 @@ return {
       keymap = {
         hide = "<Esc>"
       }
-
     }
   },
-  { 'hrsh7th/nvim-cmp',  enabled = false },
+  -- { 'hrsh7th/nvim-cmp',  enabled = false },
   {
     'stevearc/oil.nvim',
     ---@module 'oil'
@@ -181,5 +180,27 @@ return {
     },
     config = true
   },
-  { "dm1try/golden_size" }
+  { "dm1try/golden_size" },
+  {
+    "windwp/nvim-ts-autotag",
+    event = 'InsertEnter',
+  },
+  {
+    "j-morano/buffer_manager.nvim",
+    event = 'BufAdd',
+    config = function()
+      local bm = require("buffer_manager")
+      bm.setup({
+        select_menu_item_commands = {
+          g = {
+            key = "<C-g>",
+            command = "<Esc>"
+          }
+        },
+
+      })
+    end
+
+
+  }
 }
