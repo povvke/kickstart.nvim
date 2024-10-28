@@ -376,7 +376,7 @@ require('lazy').setup({
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
     event = { "BufAdd" },
-    cmd = { "LspInfo", "LspInstall", "LspUninstall" },
+    cmd = { "LspInfo", "LspInstall", "LspUninstall", "LspStart" },
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for Neovim
       -- { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
@@ -419,6 +419,7 @@ require('lazy').setup({
         }
       }
       lspconfig.astro.setup {
+        autostart = false,
         on_init = function(client)
           local orig_rpc_request = client.rpc.request
 
@@ -447,7 +448,7 @@ require('lazy').setup({
 
       lspconfig.nil_ls.setup {}
 
-      lspconfig.basedpyright.setup {}
+      lspconfig.basedpyright.setup { autostart = false }
 
 
       vim.api.nvim_create_autocmd('LspAttach', {
