@@ -116,6 +116,7 @@ return {
           mc.clearCursors()
         else
           -- Default <esc> handler.
+          vim.cmd("nohlsearch")
         end
       end)
 
@@ -126,6 +127,7 @@ return {
           mc.clearCursors()
         else
           -- Default <esc> handler.
+          vim.cmd("nohlsearch")
         end
       end)
 
