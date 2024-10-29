@@ -212,5 +212,19 @@ return {
         vim.cmd("LspStart")
       end
     }
-  }
+  },
+  -- THEMES
+  { "blazkowolf/gruber-darker.nvim",  priority = 1000 },
+  { "EdenEast/nightfox.nvim",         priority = 1000 },
+  { "eldritch-theme/eldritch.nvim",   priority = 1000 },
+  { "craftzdog/solarized-osaka.nvim", priority = 1000 },
+  { "bluz71/vim-moonfly-colors",      priority = 1000 },
+  { "bluz71/vim-nightfly-colors",     priority = 1000 },
+  { "samharju/synthweave.nvim",       priority = 1000 },
+  { "yashguptaz/calvera-dark.nvim",   priority = 1000 },
+  { "killitar/obscure.nvim",          priority = 1000 },
+  { "sho-87/kanagawa-paper.nvim",     priority = 1000 },
+  { "srcery-colors/srcery-vim",       priority = 1000 },
+  { "mellow-theme/mellow.nvim",       priority = 1000 }
+
 }

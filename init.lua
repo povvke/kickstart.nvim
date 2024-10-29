@@ -342,6 +342,8 @@ require('lazy').setup({
 
       lspconfig.basedpyright.setup { autostart = false }
 
+      lspconfig.ts_ls.setup { autostart = false }
+
 
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
@@ -507,7 +509,8 @@ require('lazy').setup({
         lua = { 'stylua' },
         astro = { 'prettierd' },
         json = { 'prettierd' },
-        python = { 'black' }
+        python = { 'black' },
+        typescript = { 'prettierd' }
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -636,10 +639,10 @@ require('lazy').setup({
   {
     'folke/tokyonight.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      vim.cmd.colorscheme 'tokyonight-night'
-      vim.cmd.hi 'Comment gui=none'
-    end,
+    -- init = function()
+    --   vim.cmd.colorscheme 'tokyonight-night'
+    --   vim.cmd.hi 'Comment gui=none'
+    -- end,
   },
 
   -- Highlight todo, notes, etc in comments
@@ -760,6 +763,43 @@ require('nvim-ts-autotag').setup({
     enable_close_on_slash = false -- Auto close on trailing </
   },
 })
+
+-- select random theme
+local themes = {
+  "nightfox",
+  "tokyonight",
+  "carbonfox",
+  "duskfox",
+  "gruber-darker",
+  "eldritch",
+  "solarized-osaka",
+  "habamax",
+  "minicyan",
+  "retrobox",
+  "slate",
+  "wildcharm",
+  "zaibatsu",
+  "randomhue",
+  "moonfly",
+  "nightfly",
+  "synthweave-transparent",
+  "synthweave",
+  "calvera",
+  "obscure",
+  "kanagawa-paper",
+  "srcery",
+  "mellow"
+}
+
+local function set_random_theme()
+  math.randomseed(os.time())
+  local random_index = math.random(#themes)
+  local theme_to_set = themes[random_index]
+  vim.cmd("colorscheme " .. theme_to_set)
+end
+
+set_random_theme()
+
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
