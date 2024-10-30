@@ -1,7 +1,7 @@
 return {
   {
     'saghen/blink.cmp',
-    lazy = false, -- lazy loading handled internally
+    event = "InsertEnter",
     -- optional: provides snippets for the snippet source
     dependencies = 'rafamadriz/friendly-snippets',
 
@@ -47,13 +47,12 @@ return {
         "size",
         "mtime"
       }
-    },
-    -- Optional dependencies
-    -- dependencies = { { "echasnovski/mini.icons", opts = {} } },
-    dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
+    }
+    -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
   },
   {
     "jake-stewart/multicursor.nvim",
+    event = "BufAdd",
     branch = "1.0",
     config = function()
       local mc = require("multicursor-nvim")
@@ -182,10 +181,20 @@ return {
     },
     config = true
   },
-  { "dm1try/golden_size" },
+  { "dm1try/golden_size",             event = "WinNew" },
   {
     "windwp/nvim-ts-autotag",
     event = 'InsertEnter',
+    config = function()
+      require('nvim-ts-autotag').setup({
+        opts = {
+          -- Defaults
+          enable_close = true,          -- Auto close tags
+          enable_rename = true,         -- Auto rename pairs of tags
+          enable_close_on_slash = false -- Auto close on trailing </
+        },
+      })
+    end
   },
   {
     "j-morano/buffer_manager.nvim",
@@ -204,6 +213,7 @@ return {
   },
   {
     "actionshrimp/direnv.nvim",
+    event = "BufAdd",
     opts = {
       async = true,
       on_direnv_finished = function()

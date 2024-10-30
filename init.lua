@@ -97,10 +97,11 @@ vim.opt.rtp:prepend(lazypath)
 -- [[ Configure and install plugins ]]
 --
 require('lazy').setup({
-  'tpope/vim-sleuth',
+  { 'tpope/vim-sleuth',     event = "BufAdd" },
 
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
+    event = "BufAdd",
     opts = {
       signs = {
         add = { text = '+' },
@@ -169,7 +170,6 @@ require('lazy').setup({
 
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
-    event = 'VimEnter',
     branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
@@ -186,6 +186,37 @@ require('lazy').setup({
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
       { 'nvim-tree/nvim-web-devicons' },
+    },
+    keys = {
+      { '<leader>fh',       function() require('telescope.builtin').help_tags() end,   desc = 'Find Help' },
+      { '<leader>fk',       function() require('telescope.builtin').keymaps() end,     desc = 'Find Keymaps' },
+      { '<M-x>',            function() require('telescope.builtin').keymaps() end,     desc = 'Find Keymaps' },
+      { '<leader>ff',       function() require('telescope.builtin').find_files() end,  desc = 'Find Files' },
+      { '<leader>fs',       function() require('telescope.builtin').builtin() end,     desc = 'Find Select Telescope' },
+      { '<leader>fw',       function() require('telescope.builtin').grep_string() end, desc = 'Find current Word' },
+      { '<leader>fg',       function() require('telescope.builtin').live_grep() end,   desc = 'Find by Grep' },
+      { '<leader>fd',       function() require('telescope.builtin').diagnostics() end, desc = 'Find Diagnostics' },
+      { '<leader>fr',       function() require('telescope.builtin').resume() end,      desc = 'Find Resume' },
+      { '<leader>f.',       function() require('telescope.builtin').oldfiles() end,    desc = 'Find Recent Files ("." for repeat)' },
+      { '<leader><leader>', function() require('telescope.builtin').find_files() end,  desc = 'Find files' },
+      { '<leader>,',        function() require('telescope.builtin').buffers() end,     desc = 'Open existing buffers' },
+      {
+        '<leader>/',
+        function()
+          require('telescope.builtin').live_grep {
+            prompt_title = 'Live Grep',
+          }
+        end,
+        desc = 'Live Grep'
+      },
+      {
+        '<leader>fp',
+        function()
+          require('telescope.builtin').find_files { cwd = vim.fn.stdpath 'config' }
+        end,
+        desc = 'Find Neovim Config files'
+      },
+
     },
     config = function()
       -- [[ Configure Telescope ]]
@@ -215,39 +246,6 @@ require('lazy').setup({
       }
 
       pcall(require('telescope').load_extension, 'ui-select')
-
-      -- See `:help telescope.builtin`
-      local builtin = require 'telescope.builtin'
-      vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Find Help' })
-      vim.keymap.set('n', '<leader>fk', builtin.keymaps, { desc = 'Find Keymaps' })
-      vim.keymap.set('n', '<M-x>', builtin.keymaps, { desc = 'Find Keymaps' })
-      vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Find Files' })
-      vim.keymap.set('n', '<leader>fs', builtin.builtin, { desc = 'Find Select Telescope' })
-      vim.keymap.set('n', '<leader>fw', builtin.grep_string, { desc = 'Find current Word' })
-      vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Find by Grep' })
-      vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = 'Find Diagnostics' })
-      vim.keymap.set('n', '<leader>fr', builtin.resume, { desc = 'Find Resume' })
-      vim.keymap.set('n', '<leader>f.', builtin.oldfiles, { desc = 'Find Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.find_files, { desc = 'Find files' })
-      vim.keymap.set('n', '<leader>,', builtin.buffers, { desc = 'Open existing buffers' })
-
-      -- vim.keymap.set('n', '<leader>/', function()
-      --   builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-      --     winblend = 10,
-      --     previewer = false,
-      --   })
-      -- end, { desc = '[/] Fuzzily search in current buffer' })
-
-      vim.keymap.set('n', '<leader>/', function()
-        builtin.live_grep {
-          prompt_title = 'Live Grep',
-        }
-      end, { desc = 'Live Grep' })
-
-      -- Shortcut for searching your Neovim configuration files
-      vim.keymap.set('n', '<leader>fp', function()
-        builtin.find_files { cwd = vim.fn.stdpath 'config' }
-      end, { desc = 'Find Neovim Config files' })
     end,
   },
 
@@ -264,7 +262,7 @@ require('lazy').setup({
   --     },
   --   },
   -- },
-  { 'Bilal2453/luvit-meta',     lazy = true },
+  { 'Bilal2453/luvit-meta', lazy = true },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -283,76 +281,9 @@ require('lazy').setup({
       -- 'hrsh7th/cmp-nvim-lsp',
     },
     config = function()
-      local lspconfig = require('lspconfig')
-      local lsp = require('vim.lsp')
-      lspconfig.lua_ls.setup {
-        on_init = function(client)
-          if client.workspace_folders then
-            local path = client.workspace_folders[1].name
-            if vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc') then
-              return
-            end
-          end
-
-          client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-            runtime = {
-              version = 'LuaJIT'
-            },
-            workspace = {
-              checkThirdParty = false,
-              library = {
-                vim.env.VIMRUNTIME
-              }
-            }
-          })
-        end,
-        settings = {
-          Lua = {}
-        }
-      }
-      lspconfig.astro.setup {
-        autostart = false,
-        on_init = function(client)
-          local orig_rpc_request = client.rpc.request
-
-          -- fucking make fucking shit work as snippets fukc
-          function client.rpc.request(method, params, handler, ...)
-            local orig_handler = handler
-
-            if method == 'textDocument/completion' then
-              handler = function(...)
-                local err, result = ...
-                if not err and result then
-                  local items = result.items or result
-                  for _, item in ipairs(items) do
-                    if item.label then
-                      item.insertTextFormat = lsp.protocol.InsertTextFormat.Snippet
-                    end
-                  end
-                end
-                return orig_handler(...)
-              end
-            end
-            return orig_rpc_request(method, params, handler, ...)
-          end
-        end,
-      }
-
-      lspconfig.nil_ls.setup {}
-
-      lspconfig.basedpyright.setup { autostart = false }
-
-      lspconfig.ts_ls.setup { autostart = false }
-
-
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
-          -- NOTE: Remember that Lua is a real programming language, and as such it is possible
-          -- to define small helper and utility functions so you don't have to repeat yourself.
-          --
-          -- In this case, we create a function that lets us more easily define mappings specific
-          -- for LSP related items. It sets the mode, buffer and description for us each time.
           local map = function(keys, func, desc, mode)
             mode = mode or 'n'
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
@@ -646,10 +577,11 @@ require('lazy').setup({
   },
 
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  { 'folke/todo-comments.nvim', event = 'BufAdd', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
+    event = "BufAdd",
     config = function()
       -- Better Around/Inside textobjects
       --
@@ -666,28 +598,21 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
-      -- Simple and easy statusline.
-      --  You could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      -- - <M-j> To move line down
+      -- - <M-k> To move line up
+      -- - etc...
+      require("mini.move").setup()
 
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
-
-      -- ... and there is more!
-      --  Check out: https://github.com/echasnovski/mini.nvim
+      -- - gm To duplicate text object
+      -- - gx to substitute text object
+      require("mini.operators").setup()
     end,
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
+    lazy = true,
+    event = "BufAdd",
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
@@ -755,19 +680,11 @@ require('lazy').setup({
   },
 })
 
-require('nvim-ts-autotag').setup({
-  opts = {
-    -- Defaults
-    enable_close = true,          -- Auto close tags
-    enable_rename = true,         -- Auto rename pairs of tags
-    enable_close_on_slash = false -- Auto close on trailing </
-  },
-})
-
 -- select random theme
 local themes = {
   "nightfox",
   "tokyonight",
+  "tokyonight-night",
   "carbonfox",
   "duskfox",
   "gruber-darker",
@@ -799,6 +716,93 @@ local function set_random_theme()
 end
 
 set_random_theme()
+
+-- Lazy-load `lua_ls` setup only when opening Lua files
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "lua",
+  callback = function()
+    require("lspconfig").lua_ls.setup {
+      on_init = function(client)
+        if client.workspace_folders then
+          local path = client.workspace_folders[1].name
+          if vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc') then
+            return
+          end
+        end
+
+        client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+          runtime = {
+            version = 'LuaJIT'
+          },
+          workspace = {
+            checkThirdParty = false,
+            library = {
+              vim.env.VIMRUNTIME
+            }
+          }
+        })
+      end,
+      settings = {
+        Lua = {}
+      }
+    }
+  end,
+})
+
+-- Lazy-load 'astro-lsp'
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "astro",
+  callback = function()
+    require("lspconfig").astro.setup {
+      autostart = false,
+      on_init = function(client)
+        local orig_rpc_request = client.rpc.request
+
+        -- fucking make fucking shit work as snippets fukc
+        function client.rpc.request(method, params, handler, ...)
+          local orig_handler = handler
+
+          if method == 'textDocument/completion' then
+            handler = function(...)
+              local err, result = ...
+              if not err and result then
+                local items = result.items or result
+                for _, item in ipairs(items) do
+                  if item.label then
+                    item.insertTextFormat = require('vim.lsp').protocol.InsertTextFormat.Snippet
+                  end
+                end
+              end
+              return orig_handler(...)
+            end
+          end
+          return orig_rpc_request(method, params, handler, ...)
+        end
+      end,
+    }
+  end
+})
+
+-- Table of servers that don't require special configuration
+local servers = {
+  basedpyright = "python",
+  nil_ls = "nix",
+  ts_ls = "typescript,javascript"
+}
+
+-- Lazy load each lsp
+for server, filetype in pairs(servers) do
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = filetype,
+    callback = function()
+      local lspconfig = require("lspconfig")
+      if not lspconfig[server].is_initialized then
+        lspconfig[server].setup({ autostart = false })
+      end
+    end
+  })
+end
+
 
 
 -- The line beneath this is called `modeline`. See `:help modeline`
