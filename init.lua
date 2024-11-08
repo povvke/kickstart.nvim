@@ -280,7 +280,13 @@ require('lazy').setup({
       -- Allows extra capabilities provided by nvim-cmp
       -- 'hrsh7th/cmp-nvim-lsp',
     },
-    config = function()
+    config = function(_, opts)
+      local lspconfig = require('lspconfig')
+      for server, config in pairs(opts.servers or {}) do
+        config.capabilities = require('blink.cmp').get_lsp_capabilities(config.capabilities)
+        lspconfig[server].setup(config)
+      end
+
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -613,6 +619,7 @@ require('lazy').setup({
     build = ':TSUpdate',
     lazy = true,
     event = "BufAdd",
+    cmd = { "TSInstall", "TSInstallInfo", "TSUpdate", "TSUninstall", "TSEnable", "TSDisable" },
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {

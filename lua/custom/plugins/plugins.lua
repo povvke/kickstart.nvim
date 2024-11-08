@@ -31,7 +31,13 @@ return {
       -- experimental signature help support
       trigger = { signature_help = { enabled = true } },
       keymap = {
-        hide = "<Esc>"
+        preset = 'super-tab',
+        ['<C-e>'] = {
+          function()
+            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<End>", true, false, true), "i", true)
+          end,
+          'fallback'
+        }
       }
     }
   },
