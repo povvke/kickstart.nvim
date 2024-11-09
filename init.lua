@@ -794,7 +794,8 @@ vim.api.nvim_create_autocmd("FileType", {
 local servers = {
   basedpyright = "python",
   nil_ls = "nix",
-  ts_ls = "typescript,javascript"
+  ts_ls = "typescript,javascript",
+  phpactor = "php"
 }
 
 -- Lazy load each lsp
